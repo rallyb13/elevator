@@ -15,5 +15,16 @@
 {{/each}}
 
 <div class="call-panel">
-
+  {{#if (not (eq activeFloor 20))}}
+    {{#rad-button
+      click=(action "callElevator" true )}}
+      /\
+    {{/rad-button}}
+  {{/if}}
+  {{#if (not (eq activeFloor 1))}}
+    {{#rad-button
+      click=(action "callElevator" false)}}
+      \/
+    {{/rad-button}}
+  {{/if}}
 </div>

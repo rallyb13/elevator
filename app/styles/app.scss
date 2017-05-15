@@ -1,7 +1,9 @@
+@import 'ember-radical/styles';
 
 /**************  Waiting Area ************/
 .waiting-area {
   display: flex;
+  margin: 0 10px;
   .single-elev {
     flex: 1;
 
@@ -10,7 +12,11 @@
       width: 100px;
       display: inline-block;
       text-align: center;
-      margin: 5px;
+      border-bottom: none;
+
+      p {
+        margin: 0;
+      }
 
       .going-up {
         color: green;
@@ -33,5 +39,11 @@
     .open-doors {
       background-color: gray;
     }
+  }
+
+  .call-panel {
+    display: flex;
+    flex-direction: column;
+    margin: 150px 25px 0 5px;
   }
 }
