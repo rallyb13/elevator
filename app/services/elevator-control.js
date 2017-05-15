@@ -3,6 +3,7 @@ const {ActionHandler} = Ember;
 
 export default Ember.Service.extend(ActionHandler, {
   // State
+  isPersOnBoard: false, // Pers = person/perspective
   elevators: [
     {
       isDoorOpen: false,
@@ -12,8 +13,22 @@ export default Ember.Service.extend(ActionHandler, {
       destinationFloor: 2,
       stops: [4]
     },
-    {},
-    {}
+    {
+      isDoorOpen: true,
+      isInTransit: false,
+      isGoingUp: false,
+      currentFloor: 1,
+      destinationFloor: 1,
+      stops: []
+    },
+    {
+      isDoorOpen: false,
+      isInTransit: true,
+      isGoingUp: true,
+      currentFloor: 3,
+      destinationFloor: 18,
+      stops: [9, 4, 14]
+    }
   ],
 
   // Methods
@@ -24,22 +39,22 @@ export default Ember.Service.extend(ActionHandler, {
       selectedEl = {};
 
 
-    for (let i=0; i<candidates.length; i++) {
-      const current = elevators[i].currentFloor,
-        dest = elevators[i].destinationFloor;
+    for (let i=0; i<this.elevators.length; i++) {
+      const current = this.elevators[i].currentFloor,
+        dest = this.elevators[i].destinationFloor;
 
-      if (elevators[i].isInTransit === false) {
+      if (this.elevators[i].isInTransit === false) {
         // if elevator not in use
         score = Math.abs(current - floor);
-      } else if (elevators[i].isGoingUp !== isUp) {
+      } else if (this.elevators[i].isGoingUp !== isUp) {
         // if elevator is heading opposite direction TODO: flag to skip floor if pass before changing direction?
         score = Math.abs(current - dest);
         score += Math.abs(dest - floor);
       } else {
         // if elevator is heading same direction &&
-        if (floor = current) {
+        if (floor === current) {
           // elevator is there
-          score = 0
+          score = 0;
         } else if (isUp === floor > current) {
           // elevator is on its way there
           score = Math.abs(current - floor);
@@ -56,7 +71,7 @@ export default Ember.Service.extend(ActionHandler, {
       }
     }
 
-    selectedEl = elevators[index];
+    selectedEl = this.elevators[index];
     // now add assignment into elevator data
     // TODO: check if doors open when on current floor once adding info in, or if just miss
     if (selectedEl.isInTransit === false){
@@ -65,7 +80,7 @@ export default Ember.Service.extend(ActionHandler, {
     }
 
     if (selectedEl.destinationFloor !== floor) {
-      if (isUp === floor < destinationFloor) {
+      if (isUp === floor < selectedEl.destinationFloor) {
         selectedEl.stops.push(floor);
       } else {
         selectedEl.stops.push(selectedEl.destinationFloor);

@@ -1,0 +1,19 @@
+{{#each elevatorService.elevators as |elev|}}
+  <div class="single-elev">
+    <div class="elevator-display">
+      <p>
+        {{#if (and elev.isInTransit elev.isGoingUp)}}
+          <span class="going-up">/\ </span>
+        {{else if (and elev.isInTransit (not elev.isGoingUp))}}
+          <span class="going-down">\/ </span>
+        {{/if}}
+        Floor: {{elev.currentFloor}}
+      </p>
+    </div>
+    <div class="elevator-doors {{if (and elev.isDoorOpen (eq elev.currentFloor activeFloor)) 'open-doors'}}"></div>
+  </div>
+{{/each}}
+
+<div class="call-panel">
+
+</div>
