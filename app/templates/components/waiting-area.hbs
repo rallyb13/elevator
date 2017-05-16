@@ -10,18 +10,25 @@
         Floor: {{elev.currentFloor}}
       </p>
     </div>
-    <div class="elevator-doors {{if (and elev.isDoorOpen (eq elev.currentFloor activeFloor)) 'open-doors'}}"></div>
+    {{#if (and elev.isDoorOpen (eq elev.currentFloor elevatorService.activeFloor))}}
+      <div class="elevator-doors open-doors">
+        {{floor-directory elId=elev.track}}
+      </div>
+    {{else}}
+      <div class="elevator-doors"></div>
+    {{/if}}
   </div>
 {{/each}}
 
 <div class="call-panel">
-  {{#if (not (eq activeFloor 20))}}
+  <p>On {{elevatorService.activeFloor}}</p>
+  {{#if (not (eq elevatorService.activeFloor 20))}}
     {{#rad-button
-      click=(action "callElevator" true )}}
+      click=(action "callElevator" true)}}
       /\
     {{/rad-button}}
   {{/if}}
-  {{#if (not (eq activeFloor 1))}}
+  {{#if (not (eq elevatorService.activeFloor 1))}}
     {{#rad-button
       click=(action "callElevator" false)}}
       \/

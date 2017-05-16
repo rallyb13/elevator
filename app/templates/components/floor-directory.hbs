@@ -1,0 +1,12 @@
+<div class="directory">
+  {{#each floors as |floor|}}
+    <button class="floor-button" onclick={{action "chooseFloor" elId floor}}>{{floor}}</button>
+  {{/each}}
+  {{#if (not (eq chosenFloor null))}}
+    {{#rad-button
+      class="come-along"
+      click=(action "doComeAlong" elId)}}
+      Come Along?
+    {{/rad-button}}
+  {{/if}}
+</div>

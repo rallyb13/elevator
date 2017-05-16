@@ -10,7 +10,6 @@ export default Ember.Component.extend({
   * @type {Number}
   * @default 1
   */
-  activeFloor: 5,
 
   /**
   * whether the elevator motion has begun yet
@@ -26,7 +25,7 @@ export default Ember.Component.extend({
   * @event didRender
   * @return undefined
   */
-  didRender() {
+  didRender() { //TODO: didInsertElement
     if (this.get('hasStarted') === false) {
       this.get('elevatorService').handleTime();
       this.set('hasStarted', true);
@@ -42,7 +41,7 @@ export default Ember.Component.extend({
     */
     callElevator(isGoingUp) {
       const elevatorServ = this.get('elevatorService');
-      elevatorServ.summonElevator(this.activeFloor, isGoingUp);
+      elevatorServ.summonElevator(elevatorServ.activeFloor, isGoingUp);
       // TODO: add UI for showing button is pressed && logic: if it's pressed don't call again
     }
   }

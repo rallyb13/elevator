@@ -9,7 +9,11 @@ const {ActionHandler} = Ember;
 * @extends Ember.Service
 */
 export default Ember.Service.extend(ActionHandler, {
-  /****************** PROPERTIES ******************
+  //****************** PROPERTIES ******************
+
+  activeFloor: 5,
+
+  /**
   * Determines whether perspective is at elevator bank or on board an elevator.
   * @property
   * @type {Boolean}
@@ -24,6 +28,8 @@ export default Ember.Service.extend(ActionHandler, {
   * @default true
   */
   isSystemActive: true,
+
+  rideAlong: {elevator: null, destination: null},
 
   /**
   * id for timeout function, used to clear old timeout count when a new request
@@ -129,14 +135,14 @@ export default Ember.Service.extend(ActionHandler, {
   * @private
   * @param {Number} index identifies specific elevator being assigned
   * @param {Number} floor Where the elevator is being summoned to
-  * @param {Boolean} isUp Requested direction for elevator to move upon arrival at floor
+  * @param {Boolean} isUp Requested direction for elevator (only from call button)
   * @return undefined
   */
   assignElevator(index, floor, isUp) {
     const selectedEl = this.elevators[index];
     let shouldGoUp = floor > selectedEl.currentFloor;
 
-    if (floor === selectedEl.currentFloor) {
+    if (floor === selectedEl.currentFloor && typeof isUp !== 'undefined') {
       shouldGoUp = isUp;
     }
 
@@ -145,8 +151,10 @@ export default Ember.Service.extend(ActionHandler, {
       Ember.set(selectedEl, 'isGoingUp', shouldGoUp);
       Ember.set(selectedEl, 'destinationFloor', floor);
     } else if (selectedEl.destinationFloor !== floor) {
-      if (isUp === floor < selectedEl.destinationFloor) {
-        selectedEl.stops.pushObject(floor);
+      if (selectedEl.isGoingUp === (floor < selectedEl.destinationFloor)) {
+        if (selectedEl.stops.indexOf(floor) === -1) {
+          selectedEl.stops.pushObject(floor);
+        }
       } else {
         selectedEl.stops.pushObject(selectedEl.destinationFloor);
         Ember.set(selectedEl, 'destinationFloor', floor);
@@ -163,7 +171,7 @@ export default Ember.Service.extend(ActionHandler, {
   * @private
   * @return undefined
   */
-  handleTime() {
+  handleTime() { //TODO interval
     const me = this;
     let timeoutId = this.get('timerId');
     window.clearTimeout(timeoutId);
@@ -227,10 +235,28 @@ export default Ember.Service.extend(ActionHandler, {
         }
       }
     }
+
     if (movingEls.length === 0) {
       this.set('isSystemActive', false);
     } else {
+      this.handleRide();
       this.handleTime();
+    }
+  },
+
+  startRide(index, floor) {
+    this.set('rideAlong', {elevator: index, destination: floor});
+  },
+
+  handleRide() {
+    const rideData = this.get('rideAlong');
+
+    if (rideData.elevator !== null) {
+      const elevatorFloor = this.get('elevators')[rideData.elevator].currentFloor;
+      this.set('activeFloor', elevatorFloor);
+      if(elevatorFloor === rideData.destination) {
+        this.set('rideAlong', {elevator: null, destination: null});
+      }
     }
   }
 

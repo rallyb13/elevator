@@ -5,7 +5,7 @@
   display: flex;
   margin: 0 10px;
   .single-elev {
-    flex: 1;
+    flex: 2;
 
     .elevator-display {
       border: solid 2px black;
@@ -45,5 +45,31 @@
     display: flex;
     flex-direction: column;
     margin: 150px 25px 0 5px;
+
+    p {
+      margin: 0;
+      text-align: center;
+    }
+  }
+}
+
+.directory {
+  margin: 5px 0 0 3px;
+  .floor-button {
+    border: 1px solid gold;
+    border-radius: 50%;
+    color: white;
+    background-color: black;
+    width: 30px;
+    height: 30px;
+    padding: 2px;
+    margin: 2px;
+  }
+  .come-along {
+    margin: 25% 20% 5% 20%;
+    padding: 5px;
+    color: black;
+    background-color: gold;
+    border: 5px brown double;
   }
 }
