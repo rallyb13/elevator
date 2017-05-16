@@ -11,25 +11,14 @@ export default Ember.Component.extend({
   * @default 1
   */
 
-  /**
-  * whether the elevator motion has begun yet
-  * @property
-  * @type {Boolean}
-  * @default false
-  */
-  hasStarted: false,
-
   /************** Hooks *************
   * use didRender to start elevators, but only make call once (continual running
   * is handled by handleTime function once it's been called)
   * @event didRender
   * @return undefined
   */
-  didRender() { //TODO: didInsertElement
-    if (this.get('hasStarted') === false) {
-      this.get('elevatorService').handleTime();
-      this.set('hasStarted', true);
-    }
+  didInsertElement() {
+    this.get('elevatorService').handleTime();
   },
 
   actions: {

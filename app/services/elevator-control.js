@@ -14,14 +14,6 @@ export default Ember.Service.extend(ActionHandler, {
   activeFloor: 5,
 
   /**
-  * Determines whether perspective is at elevator bank or on board an elevator.
-  * @property
-  * @type {Boolean}
-  * @default false
-  */
-  isPersOnBoard: false, // Pers = person/perspective TODO: create perspective switch!
-
-  /**
   * Only false when ALL elevators have stopped
   * @property
   * @type {Boolean}
@@ -95,14 +87,14 @@ export default Ember.Service.extend(ActionHandler, {
       score = 0,
       bestScore = 100;
 
-    for (let i=0; i<this.elevators.length; i++) {
-      const current = this.elevators[i].currentFloor,
-        dest = this.elevators[i].destinationFloor;
+      this.get('elevators').forEach((elevator, i) => {
+      const current = elevator.currentFloor,
+        dest = elevator.destinationFloor;
 
-      if (this.elevators[i].isInTransit === false) {
+      if (elevator.isInTransit === false) {
         // if elevator not in use
         score = Math.abs(current - floor);
-      } else if (this.elevators[i].isGoingUp !== isUp) { // TODO: add count of stops to score && intent!
+      } else if (elevator.isGoingUp !== isUp) { // TODO: add count of stops to score && intent!
         // if elevator is heading opposite direction TODO: flag to skip floor if pass before changing direction?
         score = Math.abs(current - dest);
         score += Math.abs(dest - floor);
@@ -125,7 +117,8 @@ export default Ember.Service.extend(ActionHandler, {
         index = i;
         bestScore = score;
       }
-    }
+    });
+
     this.assignElevator(index, floor, isUp);
   },
 
@@ -139,7 +132,7 @@ export default Ember.Service.extend(ActionHandler, {
   * @return undefined
   */
   assignElevator(index, floor, isUp) {
-    const selectedEl = this.elevators[index];
+    const selectedEl = this.get('elevators')[index];
     let shouldGoUp = floor > selectedEl.currentFloor;
 
     if (floor === selectedEl.currentFloor && typeof isUp !== 'undefined') {
@@ -191,15 +184,14 @@ export default Ember.Service.extend(ActionHandler, {
   * @return undefined
   */
   handleMotion() {
-    const movingEls = this.elevators.filter(obj => obj.isInTransit === true);
+    const movingEls = this.get('elevators').filter(obj => obj.isInTransit === true);
     let change = 1,
       newStops = [],
       newDest = 0;
 
     this.set('isSystemActive', true);
-    for (let i=0; i<movingEls.length; i++) {
-      let elev = movingEls[i],
-        elData = this.elevators[elev.track];
+    movingEls.forEach((elev) => {
+      let elData = this.get('elevators')[elev.track];
 
       if (elev.isDoorOpen === true) {
         // Hodor
@@ -234,7 +226,7 @@ export default Ember.Service.extend(ActionHandler, {
           Ember.set(elData, 'currentFloor', elev.currentFloor + change);
         }
       }
-    }
+    });
 
     if (movingEls.length === 0) {
       this.set('isSystemActive', false);
