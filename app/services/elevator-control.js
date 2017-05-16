@@ -75,7 +75,6 @@ export default Ember.Service.extend(ActionHandler, {
   ],
 
   /****************** METHODS ******************
-  * TODO: decompose into select elevator and assign elevator job?
   * When an elevator is called, this function uses the floor of the call and the
   * requested direction to determine which elevator is closest and assigns a
   * stop at that floor to a specific elevator
@@ -88,8 +87,7 @@ export default Ember.Service.extend(ActionHandler, {
   summonElevator: function(floor, isUp) {
     let index = 3,
       score = 0,
-      bestScore = 100,
-      selectedEl = {};
+      bestScore = 100;
 
     for (let i=0; i<this.elevators.length; i++) {
       const current = this.elevators[i].currentFloor,
@@ -98,7 +96,7 @@ export default Ember.Service.extend(ActionHandler, {
       if (this.elevators[i].isInTransit === false) {
         // if elevator not in use
         score = Math.abs(current - floor);
-      } else if (this.elevators[i].isGoingUp !== isUp) { // TODO: add count of stops to score
+      } else if (this.elevators[i].isGoingUp !== isUp) { // TODO: add count of stops to score && intent!
         // if elevator is heading opposite direction TODO: flag to skip floor if pass before changing direction?
         score = Math.abs(current - dest);
         score += Math.abs(dest - floor);
@@ -122,13 +120,29 @@ export default Ember.Service.extend(ActionHandler, {
         bestScore = score;
       }
     }
+    this.assignElevator(index, floor, isUp);
+  },
 
-    selectedEl = this.elevators[index];
-    // now add assignment into elevator data
-    // TODO: check if doors can open first when on current floor once adding info in, or if just miss (becomes off by one error)
+  /**
+  * TODO: notify whether assignment came from inside/outside el, to allow for recorded intent
+  * handles directing a specific elevator to stop at a specific floor
+  * @private
+  * @param {Number} index identifies specific elevator being assigned
+  * @param {Number} floor Where the elevator is being summoned to
+  * @param {Boolean} isUp Requested direction for elevator to move upon arrival at floor
+  * @return undefined
+  */
+  assignElevator(index, floor, isUp) {
+    const selectedEl = this.elevators[index];
+    let shouldGoUp = floor > selectedEl.currentFloor;
+
+    if (floor === selectedEl.currentFloor) {
+      shouldGoUp = isUp;
+    }
+
     if (selectedEl.isInTransit === false){
       Ember.set(selectedEl, 'isInTransit', true);
-      Ember.set(selectedEl, 'isGoingUp', isUp);
+      Ember.set(selectedEl, 'isGoingUp', shouldGoUp);
       Ember.set(selectedEl, 'destinationFloor', floor);
     } else if (selectedEl.destinationFloor !== floor) {
       if (isUp === floor < selectedEl.destinationFloor) {
@@ -162,6 +176,7 @@ export default Ember.Service.extend(ActionHandler, {
   },
 
   /**
+  * TODO: preserve INTENT for summoned elevator on its last stop if a pickup (to go up, to go down)
   * puts elevators in motion by changing the elevators object to reflect the next
   * state of each elevator (including leaving time for doors to open/close)
   * @private
@@ -202,7 +217,7 @@ export default Ember.Service.extend(ActionHandler, {
         } else if (elev.stops.indexOf(elev.currentFloor) !== -1) {
           // open doors at a stop
           Ember.set(elData, 'isDoorOpen', true);
-          newStops = elev.stops
+          newStops = elev.stops;
           newStops.splice(elev.stops.indexOf(elev.currentFloor), 1);
           Ember.set(elData, 'stops', newStops);
         } else {
@@ -219,5 +234,4 @@ export default Ember.Service.extend(ActionHandler, {
     }
   }
 
-  //TODO: add destination (in elevator)
 });

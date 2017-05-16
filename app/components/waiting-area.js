@@ -10,11 +10,10 @@ export default Ember.Component.extend({
   * @type {Number}
   * @default 1
   */
-  activeFloor: 2,
+  activeFloor: 5,
 
   /**
   * whether the elevator motion has begun yet
-  * TODO: eliminate if possible
   * @property
   * @type {Boolean}
   * @default false
@@ -30,7 +29,7 @@ export default Ember.Component.extend({
   didRender() {
     if (this.get('hasStarted') === false) {
       this.get('elevatorService').handleTime();
-      this.set('hasStarted', true); //
+      this.set('hasStarted', true);
     }
   },
 
