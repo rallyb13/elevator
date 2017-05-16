@@ -1,11 +1,46 @@
 import Ember from 'ember';
 const {ActionHandler} = Ember;
 
+/*************** SERVICE ******************
+* Service for controlling the elevators: moving them and handling all data
+* related to where they still need to go.
+* @class Service.ElevatorControl
+* @constructor
+* @extends Ember.Service
+*/
 export default Ember.Service.extend(ActionHandler, {
-  // State
-  isPersOnBoard: false, // Pers = person/perspective
+  /****************** PROPERTIES ******************
+  * Determines whether perspective is at elevator bank or on board an elevator.
+  * @property
+  * @type {Boolean}
+  * @default false
+  */
+  isPersOnBoard: false, // Pers = person/perspective TODO: create perspective switch!
+
+  /**
+  * Only false when ALL elevators have stopped
+  * @property
+  * @type {Boolean}
+  * @default true
+  */
   isSystemActive: true,
+
+  /**
+  * id for timeout function, used to clear old timeout count when a new request
+  * comes in
+  * @property
+  * @type {Number}
+  * @default 0
+  */
   timerId: 0,
+
+  /**
+  * data for all elevator statuses, including current floor and all floors
+  * elevator is headed toward, whether elevator is moving, which direction, and
+  * door open/closed status (with counter)
+  * @property
+  * @type {Array.<Object>}
+  */
   elevators: [
     {
       isDoorOpen: false,
@@ -39,8 +74,18 @@ export default Ember.Service.extend(ActionHandler, {
     }
   ],
 
-  // Methods
-  summonElevator: function(floor, isUp) { //TODO: decompose into select elevator & assign elevator job?
+  /****************** METHODS ******************
+  * TODO: decompose into select elevator and assign elevator job?
+  * When an elevator is called, this function uses the floor of the call and the
+  * requested direction to determine which elevator is closest and assigns a
+  * stop at that floor to a specific elevator
+  *
+  * @private
+  * @param {Number} floor Where the elevator is being summoned to
+  * @param {Boolean} isUp Requested direction for elevator to move upon arrival at floor
+  * @return undefined
+  */
+  summonElevator: function(floor, isUp) {
     let index = 3,
       score = 0,
       bestScore = 100,
@@ -96,6 +141,14 @@ export default Ember.Service.extend(ActionHandler, {
     this.handleMotion();
   },
 
+  /**
+  * Handles timeouts to move elevator every second, clearing timeouts when
+  * additional requests are made (calls handleMotion, which can call handelTime
+  * again)
+  *
+  * @private
+  * @return undefined
+  */
   handleTime() {
     const me = this;
     let timeoutId = this.get('timerId');
@@ -108,6 +161,12 @@ export default Ember.Service.extend(ActionHandler, {
     }
   },
 
+  /**
+  * puts elevators in motion by changing the elevators object to reflect the next
+  * state of each elevator (including leaving time for doors to open/close)
+  * @private
+  * @return undefined
+  */
   handleMotion() {
     const movingEls = this.elevators.filter(obj => obj.isInTransit === true);
     let change = 1,
@@ -158,13 +217,7 @@ export default Ember.Service.extend(ActionHandler, {
     } else {
       this.handleTime();
     }
-
-
-
   }
 
-  /*TODO: write more functionality:
-  * add destination (in elevator)
-  * check for stops, as part of handle doors & motion [this function is called by time interval to refresh data]
-  */
+  //TODO: add destination (in elevator)
 });
