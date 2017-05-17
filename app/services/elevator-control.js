@@ -15,7 +15,7 @@ export default Ember.Service.extend(ActionHandler, {
   * @type {Number}
   * @default 1
   */
-  activeFloor: 1,
+  activeFloor: 5,
 
   /**
   * Only false when ALL elevators have stopped

@@ -1,11 +1,11 @@
 {{#each elevatorService.elevators as |elev|}}
   <div class="single-elev">
-    <div class="elevator-display">
+    <div class="elevator-display border-bottom-0">
       <p>
         {{#if (and elev.isInTransit elev.isGoingUp)}}
-          <span class="going-up">/\ </span>
+          <span class="badge badge-pill badge-success">/\ </span>
         {{else if (and elev.isInTransit (not elev.isGoingUp))}}
-          <span class="going-down">\/ </span>
+          <span class="badge badge-pill badge-danger">\/ </span>
         {{/if}}
         Floor: {{elev.currentFloor}}
       </p>
@@ -20,16 +20,18 @@
   </div>
 {{/each}}
 
-<div class="call-panel">
-  <p>On {{elevatorService.activeFloor}}</p>
+<div class="card h-25 call-panel">
+  <h6 class="card-title">On {{elevatorService.activeFloor}}</h6>
   {{#if (not (eq elevatorService.activeFloor 20))}}
     {{#rad-button
+      brand="success"
       click=(action "callElevator" true)}}
       /\
     {{/rad-button}}
   {{/if}}
   {{#if (not (eq elevatorService.activeFloor 1))}}
     {{#rad-button
+      brand="danger"
       click=(action "callElevator" false)}}
       \/
     {{/rad-button}}
