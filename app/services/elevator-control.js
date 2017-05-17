@@ -9,9 +9,13 @@ const {ActionHandler} = Ember;
 * @extends Ember.Service
 */
 export default Ember.Service.extend(ActionHandler, {
-  //****************** PROPERTIES ******************
-
-  activeFloor: 5,
+  /****************** PROPERTIES ******************
+  * floor of waiting area
+  * @property
+  * @type {Number}
+  * @default 1
+  */
+  activeFloor: 1,
 
   /**
   * Only false when ALL elevators have stopped
@@ -21,6 +25,12 @@ export default Ember.Service.extend(ActionHandler, {
   */
   isSystemActive: true,
 
+  /**
+  * data relating to changing activeFloor with elevator
+  * @property
+  * @type {Object.<Number>}
+  * @default nulls
+  */
   rideAlong: {elevator: null, destination: null},
 
   /**
@@ -157,6 +167,7 @@ export default Ember.Service.extend(ActionHandler, {
   },
 
   /**
+  * TODO switch to setInterval
   * Handles timeouts to move elevator every second, clearing timeouts when
   * additional requests are made (calls handleMotion, which can call handelTime
   * again)
@@ -164,7 +175,7 @@ export default Ember.Service.extend(ActionHandler, {
   * @private
   * @return undefined
   */
-  handleTime() { //TODO interval
+  handleTime() {
     const me = this;
     let timeoutId = this.get('timerId');
     window.clearTimeout(timeoutId);
@@ -236,10 +247,22 @@ export default Ember.Service.extend(ActionHandler, {
     }
   },
 
+  /**
+  * store data in rideAlong property to initiate changing activeFloor with elevator
+  * @private
+  * @param {Number} index The id of the elevator in which selection is made
+  * @param {Number} floor The floor elevator is directed to
+  * @return undefined
+  */
   startRide(index, floor) {
     this.set('rideAlong', {elevator: index, destination: floor});
   },
 
+  /**
+  * check for rideAlong data; adjust activeFloor when present and reset at end
+  * @private
+  * @return undefined
+  */
   handleRide() {
     const rideData = this.get('rideAlong');
 
