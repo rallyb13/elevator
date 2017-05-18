@@ -1,39 +1,43 @@
-{{#each elevatorService.elevators as |elev|}}
-  <div class="single-elev">
-    <div class="elevator-display border-bottom-0">
-      <p>
-        {{#if (and elev.isInTransit elev.isGoingUp)}}
-          <span class="badge badge-pill badge-success">/\ </span>
-        {{else if (and elev.isInTransit (not elev.isGoingUp))}}
-          <span class="badge badge-pill badge-danger">\/ </span>
-        {{/if}}
-        Floor: {{elev.currentFloor}}
-      </p>
-    </div>
-    {{#if (and elev.isDoorOpen (eq elev.currentFloor elevatorService.activeFloor))}}
-      <div class="elevator-doors open-doors">
-        {{floor-directory elId=elev.track}}
+<h4 class="nav justify-content-center">Your Elevator Bae</h4>
+<div class="waiting-area">
+  {{#each elevatorService.elevators as |elev|}}
+    <div class="single-elev">
+      <div class="elevator-display border-bottom-0">
+        <p>
+          {{#if (and elev.isInTransit elev.isGoingUp)}}
+            <span class="badge badge-pill badge-success">/\</span>
+          {{else if (and elev.isInTransit (not elev.isGoingUp))}}
+            <span class="badge badge-pill badge-danger">\/ </span>
+          {{/if}}
+          Floor: {{elev.currentFloor}}
+        </p>
       </div>
-    {{else}}
-      <div class="elevator-doors"></div>
+      {{#if (and elev.isDoorOpen (eq elev.currentFloor elevatorService.activeFloor))}}
+        <div class="elevator-doors open-doors border-bottom-0">
+          {{floor-directory elId=elev.track}}
+        </div>
+      {{else}}
+        <div class="elevator-doors border-bottom-0"></div>
+      {{/if}}
+    </div>
+  {{/each}}
+
+  <div class="card h-25 call-panel">
+    <h6 class="card-title">On {{elevatorService.activeFloor}}</h6>
+    {{#if (not (eq elevatorService.activeFloor 20))}}
+      {{#rad-button
+        brand="success"
+        click=(action "callElevator" true)}}
+        /\
+      {{/rad-button}}
+    {{/if}}
+    {{#if (not (eq elevatorService.activeFloor 1))}}
+      {{#rad-button
+        brand="danger"
+        click=(action "callElevator" false)}}
+        \/
+      {{/rad-button}}
     {{/if}}
   </div>
-{{/each}}
-
-<div class="card h-25 call-panel">
-  <h6 class="card-title">On {{elevatorService.activeFloor}}</h6>
-  {{#if (not (eq elevatorService.activeFloor 20))}}
-    {{#rad-button
-      brand="success"
-      click=(action "callElevator" true)}}
-      /\
-    {{/rad-button}}
-  {{/if}}
-  {{#if (not (eq elevatorService.activeFloor 1))}}
-    {{#rad-button
-      brand="danger"
-      click=(action "callElevator" false)}}
-      \/
-    {{/rad-button}}
-  {{/if}}
 </div>
+<div class="underfoot"></div>

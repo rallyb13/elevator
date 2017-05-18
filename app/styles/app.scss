@@ -1,20 +1,29 @@
 @import 'ember-radical/styles';
 
+$light-shade: #d9f7fa; // or #A9E4EA #78CAD2
+$light-bord: #ffddb7;
 
 /**************  Waiting Area ************/
+.nav {
+  background-color: $light-shade;
+}
+
 .waiting-area {
   display: flex;
   align-items: center;
-  margin: 3% 2.5%;
+  padding: 3% 2.5% 0;
+  background-image: url('/wood.jpg');
+  border-bottom: 2px solid black;
 
   .single-elev {
     flex: 2;
 
     .elevator-display {
-      border: solid 2px black;
+      border: solid 1px $light-bord;
       width: 100px;
       display: inline-block;
       text-align: center;
+      background-color: $light-shade;
 
       p {
         margin: 0;
@@ -25,7 +34,7 @@
       width: 200px;
       height: 300px;
       background-color: maroon;
-      border: 3px solid black;
+      border: 1px solid $light-bord;
     }
 
     .open-doors {
@@ -46,12 +55,21 @@
 
   .call-panel {
     margin-left: -5%;
+    background-color: $light-shade;
+    border: 1px solid $light-bord;
 
     h6 {
       margin: 0;
       text-align: center;
     }
   }
+}
+
+.underfoot {
+  background-image: url('/marble.jpg');
+  background-size: cover;
+  padding-top: 400px;
+  width: 100%;
 }
 
 /**************  Directory ************/
